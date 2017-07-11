@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.persistence.Transient;
 
 import org.apache.solr.common.SolrDocumentList;
 
@@ -12,7 +11,6 @@ public class SearchResultVO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
-	@Transient
 	private SolrDocumentList documentList;
 	private LinkedHashMap<String, Map<String,Long>> facetResult;
 	private LinkedHashMap<String, String> inputtagResult;

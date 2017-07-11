@@ -31,7 +31,7 @@ repositories {
 dependencies {
     compile("com.google.code.gson:gson:1.7.1")
     compile('org.springframework.boot:spring-boot-starter-web')
-    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    //compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile('org.apache.solr:solr-solrj:6.2.0')
     compile("com.zaxxer:HikariCP:2.4.3")
     compile fileTree(dir: 'lib', include: '**/*.jar')

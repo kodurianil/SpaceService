@@ -82,7 +82,7 @@ public class SolrSearchService {
 	}
 
 	private String buildSolrInstance() {
-		return "http://usdl013:6178/solr/space2";
+		return "http://localhost:8983/solr/space2";
 	}
 
 	public void getFacetFields(List<FacetField> fflist, LinkedHashMap<String, Map<String, Long>> resultFacet) {

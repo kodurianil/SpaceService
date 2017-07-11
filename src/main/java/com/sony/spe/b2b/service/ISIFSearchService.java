@@ -1,8 +1,5 @@
 package com.sony.spe.b2b.service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +17,8 @@ public class ISIFSearchService {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	@PersistenceContext
-	EntityManager entityManager;
+	/*@PersistenceContext
+	EntityManager entityManager;*/
 
 	@Autowired
 	private SolrSearchService solrSearchService;
