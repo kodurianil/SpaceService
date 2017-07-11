@@ -1,4 +1,4 @@
-package com.sony.spe.b2b.controller;
+package com.sony.space.poc.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sony.spe.b2b.service.ISIFSearchService;
-import com.sony.spe.b2b.vo.SearchResultVO;
-import com.sony.spe.b2b.vo.SolrRequestVO;
+import com.sony.space.poc.service.ISIFSearchService;
+import com.sony.space.poc.vo.SearchResultVO;
+import com.sony.space.poc.vo.SolrRequestVO;
 
 @RestController
 public class ISIFController {

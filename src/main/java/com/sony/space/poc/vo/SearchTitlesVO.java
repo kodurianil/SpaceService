@@ -1,4 +1,4 @@
-package com.sony.spe.b2b.vo;
+package com.sony.space.poc.vo;
 
 import java.io.Serializable;
 import java.util.List;

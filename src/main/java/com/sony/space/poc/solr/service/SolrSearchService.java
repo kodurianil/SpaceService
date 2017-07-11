@@ -1,4 +1,4 @@
-package com.sony.spe.solr.service;
+package com.sony.space.poc.solr.service;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -17,8 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.sony.spe.b2b.vo.SearchResultVO;
-import com.sony.spe.b2b.vo.SolrRequestVO;
+import com.sony.space.poc.vo.SearchResultVO;
+import com.sony.space.poc.vo.SolrRequestVO;
 
 @Service
 public class SolrSearchService {

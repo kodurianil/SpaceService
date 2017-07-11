@@ -1,4 +1,4 @@
-package com.sony.spe.b2b.vo;
+package com.sony.space.poc.vo;
 
 public class SolrRequestVO {
 

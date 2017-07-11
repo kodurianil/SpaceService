@@ -1,4 +1,4 @@
-package com.sony.spe.b2b;
+package com.sony.space.poc;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
