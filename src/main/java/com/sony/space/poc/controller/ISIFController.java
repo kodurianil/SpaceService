@@ -17,7 +17,7 @@ public class ISIFController {
 	@Autowired
 	ISIFSearchService isifSearchService;
 	
-	//@CrossOrigin(origins="*")
+	@CrossOrigin(origins="*")
 	@RequestMapping(value = "/rest/searchProduct", produces = "application/json; charset=utf-8", method = RequestMethod.POST)
     public SearchResultVO searchProduct(@RequestBody SolrRequestVO solrRequestVO) throws Exception {
         try {

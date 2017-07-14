@@ -1,6 +1,7 @@
 package com.sony.space.poc.solr.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrException;
+import org.apache.solr.common.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,35 +32,70 @@ public class SolrSearchService {
 	@SuppressWarnings("deprecation")
 	public SearchResultVO getResponseStringFromSolr(SolrRequestVO solrRequestVO) {
 		QueryResponse response = null;
+        
 		Integer maxRowsPerPage = solrRequestVO.getMaxRowsPerPage() != null ? solrRequestVO.getMaxRowsPerPage() : 30;
 		Integer currentPage = solrRequestVO.getCurrentPage() != null ? solrRequestVO.getCurrentPage() : 0;
-		SolrQuery solrQuery = new SolrQuery();
-		StringBuilder query= new StringBuilder();
 		SearchResultVO searchResultVO = new SearchResultVO();
 		LinkedHashMap<String, Map<String, Long>> facetResult = new LinkedHashMap<>();
+		
 		try {
+			
+			SolrQuery solrQuery = new SolrQuery();
 			solrQuery.setStart(currentPage);
-			solrQuery.setRows(maxRowsPerPage);
+			//solrQuery.setRows(maxRowsPerPage);
+			solrQuery.setQuery("*:*");
+			
 			String mainCategory = solrRequestVO.getMainCategory();
-			String locale = solrRequestVO.getLocale();
-			String searchString = solrRequestVO.getSearchString();
-			if(mainCategory != null && !"".equals(mainCategory)){
-				query.append("mainCategory:"+mainCategory);
-				if(locale != null && !"".equals(locale) && query != null && !query.toString().equals("")){
-					query.append(" AND locale:"+locale);
-				}else{
-					query.append("");
-				}
-				if(searchString != null && !"".equals(searchString) && query != null && !query.toString().equals("")){
-					query.append(" AND fullProductInfo:*"+ClientUtils.escapeQueryChars(searchString)+"*");
-				}else{
-					query.append("");
-				}
-				solrQuery.setQuery(query.toString());
-			}else{
-				solrQuery.setQuery("*:*");
+			if(!StringUtils.isEmpty(mainCategory)) {
+				solrQuery.addFilterQuery("mainCategory:"+mainCategory);
 			}
-			generateFacetConditions(solrQuery);
+			
+			String locale = solrRequestVO.getLocale();
+			if(!StringUtils.isEmpty(locale)){
+				solrQuery.addFilterQuery("locale:"+locale);
+			}
+			
+			String searchString = solrRequestVO.getSearchString();
+			if(!StringUtils.isEmpty(searchString)){
+				solrQuery.addFilterQuery("fullProductInfo:*"+ClientUtils.escapeQueryChars(searchString)+"*");
+			}
+			
+			List<String> tvType = solrRequestVO.getTvType();
+			if(null != tvType && tvType.size() > 0) {
+				solrQuery.addFilterQuery(getSolrInString("tvType", tvType));
+			}
+			
+			List<String> televisionScreenSize = solrRequestVO.getTelevisionScreenSize();
+			if(null != televisionScreenSize && televisionScreenSize.size() > 0) {
+				solrQuery.addFilterQuery(getSolrInString("televisionScreenSize", televisionScreenSize));
+			}
+			
+			List<String> tvFeatures = solrRequestVO.getTvFeatures();
+			if(null != tvFeatures && tvFeatures.size() > 0) {
+				solrQuery.addFilterQuery(getSolrInString("tvFeatures", tvFeatures));
+			}
+			
+			List<String> cybershotBestFor = solrRequestVO.getCybershotBestFor();
+			if(null != cybershotBestFor && cybershotBestFor.size() > 0) {
+				solrQuery.addFilterQuery(getSolrInString("cybershotBestFor", cybershotBestFor));
+			}
+			
+			List<String> cybershotFeatures = solrRequestVO.getCybershotFeatures();
+			if(null != cybershotFeatures && cybershotFeatures.size() > 0) {
+				solrQuery.addFilterQuery(getSolrInString("cybershotFeatures", cybershotFeatures));
+			}
+			
+			List<String> cybershotMegapixels = solrRequestVO.getCybershotMegapixels();
+			if(null != cybershotMegapixels && cybershotMegapixels.size() > 0) {
+				solrQuery.addFilterQuery(getSolrInString("cybershotMegapixels", cybershotMegapixels));
+			}
+			
+			List<String> cameraType = solrRequestVO.getCameraType();
+			if(null != cameraType && cameraType.size() > 0) {
+				solrQuery.addFilterQuery(getSolrInString("cameraType",cameraType));
+			}
+			
+			generateFacetConditions(mainCategory, solrQuery);
 			solrInstance = new HttpSolrClient(buildSolrInstance());
 			LOG.info("SolrQuery Before hitting Solr : " + solrQuery);
 			try{
@@ -81,11 +118,23 @@ public class SolrSearchService {
 		return searchResultVO;
 	}
 
+	private static String getSolrInString(String fieldName, List<String> strList) {
+		StringBuffer fieldQuery = new StringBuffer();
+		for(String str: strList) {
+			if(fieldQuery.length() != 0) {
+				fieldQuery.append(" AND ");
+			}
+			fieldQuery.append(fieldName+":"+ClientUtils.escapeQueryChars(str));
+		}
+		System.out.println(fieldQuery);
+		return fieldQuery.toString();
+	}
+	
 	private String buildSolrInstance() {
 		return "http://localhost:8983/solr/space2";
 	}
 
-	public void getFacetFields(List<FacetField> fflist, LinkedHashMap<String, Map<String, Long>> resultFacet) {
+	private void getFacetFields(List<FacetField> fflist, LinkedHashMap<String, Map<String, Long>> resultFacet) {
 		if (fflist != null) {
 			for (FacetField ff : fflist) {
 				getFinalFacets(resultFacet, ff);
@@ -107,12 +156,28 @@ public class SolrSearchService {
 		}
 	}
 
-	public void generateFacetConditions(SolrQuery solrQuery) {
-		solrQuery.addFacetField("tvType");
-		solrQuery.addFacetField("televisionScreenSize");
-		solrQuery.addFacetField("tvFeatures");
+	public void generateFacetConditions(String mainCategory, SolrQuery solrQuery) {
+		
+		if ("televisions".equals(mainCategory)) {
+			solrQuery.addFacetField("tvType");
+			solrQuery.addFacetField("televisionScreenSize");
+			solrQuery.addFacetField("tvFeatures");
+		} else if ("cameras".equals(mainCategory)) {
+			solrQuery.addFacetField("cameraType");
+			solrQuery.addFacetField("cybershotBestFor");
+			solrQuery.addFacetField("cybershotFeatures");
+			solrQuery.addFacetField("cybershotMegapixels");
+		}
 		solrQuery.setFacetSort("index");
 		solrQuery.setFacetMinCount(1);
 	}
+	
+	/*public static void main(String[] args) {
+		List<String> strList = new ArrayList<String>();
+		strList.add("Android TV");
+		strList.add("Full HD");
+		strList.add("LED");
+		getSolrInString("tvType", strList);
+	}*/
 	
 }
